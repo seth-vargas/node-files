@@ -1,5 +1,6 @@
 const fs = require("fs")
 const axios = require("axios")
+const process = require("process")
 
 const args = process.argv
 
@@ -54,7 +55,7 @@ async function loopOverArgs(args) {
                 if (err) {
                     console.log(`Couldn't write ${filename}`)
                     console.log("Error: ", err)
-                    process.kill()
+                    process.exit(1)
                 }
             })
             return
@@ -72,7 +73,7 @@ async function cat(path) {
     return fs.readFileSync(`${path}`, "utf8", (err, data) => { // old: fs.readFile( ...
         if (err) {
             console.log("Error: " + err)
-            process.kill()
+            process.exit(1)
         }
     })
 }
@@ -83,7 +84,7 @@ async function webCat(url) {
         return resp.data
     } catch (err) {
         console.log("Error: " + err)
-        process.kill()
+        process.exit(1)
     }
 
 }

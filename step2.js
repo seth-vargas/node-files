@@ -1,5 +1,6 @@
 const fs = require("fs")
 const axios = require("axios")
+const process = require("process")
 
 /* Copy over your step1.js code to step2.js
 
@@ -25,7 +26,7 @@ function cat(path) {
     fs.readFile(`${path}`, "utf8", (err, data) => {
         if (err) {
             console.log("Error: " + err)
-            process.kill()
+            process.exit(1)
         }
         console.log(data)
     })
@@ -37,7 +38,7 @@ async function webCat(url) {
         console.log(resp.data)
     } catch (error) {
         console.log(error)
-        process.kill()
+        process.exit(1)
     }
 
 }
