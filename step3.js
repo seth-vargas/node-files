@@ -36,9 +36,11 @@ Error: ENOENT: no such file or directory, open '/no/dir/new.txt'
 
 loopOverArgs(args)
 
+// node filename.js --out
 async function loopOverArgs(args) {
     for (let i = 2; i < args.length; i++) {
         const command = args[i]
+        let resp
 
         if (command.startsWith("--out")) {
             const filename = args[i+1] // get filename (the file we are writing to)
@@ -48,34 +50,37 @@ async function loopOverArgs(args) {
             if (path.startsWith("http")) {
                 content = await webCat(path)// call webCat, save to content
             } else {
-                content = await cat(path) // call cat, save to content
+                content = cat(path) // call cat, save to content
             }
-
-            fs.writeFile(filename, `${content}`, (err) => {
-                if (err) {
-                    console.log(`Couldn't write ${filename}`)
-                    console.log("Error: ", err)
-                    process.exit(1)
-                }
-            })
+            try {
+                fs.writeFileSync(filename, `${content}`)
+            } catch (error) {
+                console.log("Error: ", error)
+            }
             return
         } else if (command.startsWith("http")) {
-            const resp = await webCat(command) // call webCat, console.log it
-            console.log(resp)
+            resp = await webCat(command) // call webCat, console.log it
         } else {
-            const resp = await cat(command) // call cat, console.log it
-            console.log(resp)
+            resp = cat(command) // call cat, console.log it
         }
+        console.log(resp)
     }
 }
 
-async function cat(path) {
-    return fs.readFileSync(`${path}`, "utf8", (err, data) => { // old: fs.readFile( ...
-        if (err) {
-            console.log("Error: " + err)
-            process.exit(1)
-        }
-    })
+// async function cat(path) {
+//     return fs.readFileSync(`${path}`, "utf8", (err, data) => { // old: fs.readFile( ...
+//         if (err) {
+//             console.log("Error: " + err)
+//             process.exit(1)
+//         }
+    // })
+
+function cat(path) {
+    try {
+        return fs.readFileSync(`${path}`, "utf8")
+    } catch (error) {
+        console.log("Error: ", error)
+    }
 }
 
 async function webCat(url) {
